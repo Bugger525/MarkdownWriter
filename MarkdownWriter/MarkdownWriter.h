@@ -1,12 +1,8 @@
 #pragma once
 
 #include <string>
-
-class IElement
-{
-private:
-	IElement();
-};
+#include <sstream>
+#include <map>
 
 enum class HeaderSize : uint32_t
 {
@@ -17,20 +13,44 @@ enum class HeaderSize : uint32_t
 	Five = 5,
 	Six = 6
 };
-
-class Header : public IElement
+enum class TextStyle
+{
+	Regular,
+	Italic,
+	Bold
+};
+class Header
 {
 public:
-	Header(const std::string& text, HeaderSize size = HeaderSize::One);
+	Header(const std::string& text, const std::string& id, HeaderSize size = HeaderSize::One);
+
+	std::string Text = "";
+	std::string Id = "";
+	HeaderSize Size{};
+
+	std::string ToString() const;
+};
+class Text
+{
+
 };
 
 class Markdown
 {
 public:
 	Markdown(const std::string& filePath);
-	void AddElement(IElement element);
+
+	void AddHeader(const Header& header);
+	void AddHeader(const std::string& text, const std::string& id, HeaderSize size = HeaderSize::One);
+	void RemoveHeader();
+
+	void AddText(const Text& text);
+	void AddText(const std::string& text, const std::string& id, TextStyle style = TextStyle::Regular);
+
+
 	std::string ToString();
-	bool SyncFile();
+	void SyncFile();
 private:
 	std::string filePath_ = "";
+	std::stringstream text_{};
 };

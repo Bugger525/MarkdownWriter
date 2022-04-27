@@ -1,52 +1,54 @@
 #include "../MarkdownWriter.h"
-#include "../Includes/File.h"
+#include <fstream>
 
 using std::string;
 using std::stringstream;
+using std::unique_ptr;
 
-Header::Header(const string& text, const std::string& id, HeaderSize size)
+Header::Header(const string& text, HeaderSize size)
 {
 	Text = text;
-	Id = id;
 	Size = size;
 }
 string Header::ToString() const
 {
 	stringstream ss;
-	for (int i = 0; i < static_cast<uint32_t>(Size); i++)
+	for (uint32_t i = 0; i < static_cast<uint32_t>(Size); i++)
 	{
 		ss << '#';
 	}
-	ss << ' ' << Text;
+	ss << ' ' << Text << "\n";
 
 	return ss.str();
 }
-Markdown::Markdown(const string& filePath)
+Markdown::Markdown(std::vector<std::unique_ptr<IElement>> elements)
 {
-	filePath_ = filePath;
+	elements_.assign(elements.begin(), elements.end());
 }
 void Markdown::AddHeader(const Header& header)
 {
-	text_ << header.ToString() << "\n";
+	elements_.push_back(std::make_unique<Header>(header));
 }
-void Markdown::AddHeader(const std::string& text, const std::string& id, HeaderSize size)
+void Markdown::AddHeader(const string& text, HeaderSize size)
 {
-	stringstream ss;
-	for (int i = 0; i < static_cast<uint32_t>(size); i++)
-	{
-		ss << '#';
-	}
-	ss << ' ' << text;
-}
-void Markdown::RemoveHeader()
-{
-
+	elements_.push_back(std::make_unique<Header>(text, size));
 }
 std::string Markdown::ToString()
 {
+	text_.clear();
+	for (const auto& element : elements_)
+	{
+		text_ << element->ToString();
+	}
 	return text_.str();
 }
-void Markdown::SyncFile()
+void Markdown::Save(const string& path)
 {
-	File::WriteText(filePath_, text_.str());
+	text_.clear();
+	for (const auto& element : elements_)
+	{
+		text_ << element->ToString();
+	}
+	auto out = std::ofstream(path, std::ios_base::trunc);
+	out << text_.str();
 }

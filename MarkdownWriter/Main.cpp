@@ -3,11 +3,11 @@
 
 int main()
 {
-	auto h = Header("README.MD IS GREAT!", "Title1", HeaderSize::One);
-	auto md = Markdown("Test.md");
-
-	md.AddHeader(h);
-	md.AddHeader(Header{ "I'm Bugger", "Intro", HeaderSize::Four });
-
-	md.SyncFile();
+	auto md = Markdown({
+		MdHeader("Hello World!"),
+		MdHeader("Hello C++!", HeaderSize::Two),
+		MdHeader("Hello namespace std!", HeaderSize::Three)
+		});
+	//std::cout << md.ToString();
+	md.Save("Test.md");
 }

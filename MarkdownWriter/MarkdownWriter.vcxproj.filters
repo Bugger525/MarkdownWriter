@@ -18,17 +18,11 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Includes\File.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Implementations\MarkdownWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Includes\File.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MarkdownWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>

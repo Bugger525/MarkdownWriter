@@ -2,7 +2,8 @@
 
 #include <string>
 #include <sstream>
-#include <map>
+#include <vector>
+#include <memory>
 
 enum class HeaderSize : uint32_t
 {
@@ -19,38 +20,42 @@ enum class TextStyle
 	Italic,
 	Bold
 };
-class Header
+class IElement
 {
 public:
-	Header(const std::string& text, const std::string& id, HeaderSize size = HeaderSize::One);
-
 	std::string Text = "";
-	std::string Id = "";
+	virtual std::string ToString() const = 0;
+};
+class Header : public IElement
+{
+public:
+	Header(const std::string& text, HeaderSize size);
+
 	HeaderSize Size{};
 
-	std::string ToString() const;
+	std::string ToString() const override;
 };
-class Text
+class Text : public IElement
 {
 
 };
+
+std::unique_ptr<Header> MdHeader(const std::string& text, HeaderSize size = HeaderSize::One);
 
 class Markdown
 {
 public:
-	Markdown(const std::string& filePath);
+	Markdown(std::vector<std::unique_ptr<IElement>> elements);
 
 	void AddHeader(const Header& header);
-	void AddHeader(const std::string& text, const std::string& id, HeaderSize size = HeaderSize::One);
-	void RemoveHeader();
+	void AddHeader(const std::string& text, HeaderSize size = HeaderSize::One);
 
 	void AddText(const Text& text);
-	void AddText(const std::string& text, const std::string& id, TextStyle style = TextStyle::Regular);
-
+	void AddText(const std::string& text, TextStyle style = TextStyle::Regular);
 
 	std::string ToString();
-	void SyncFile();
+	void Save(const std::string& path);
 private:
-	std::string filePath_ = "";
+	std::vector<std::unique_ptr<IElement>> elements_{};
 	std::stringstream text_{};
 };
